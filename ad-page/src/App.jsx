@@ -3,20 +3,23 @@ import './App.css';
 
 function App() {
   const INITIAL_TIME = 15;
-
-  // Get parameters from URL
+  
+  // Get parameters from URL - now using token instead of direct link
   const params = new URLSearchParams(window.location.search);
-  const linkParam = params.get('link');
-  const nameParam = params.get('name');
-  const sizeParam = params.get('size');
-
+  const tokenParam = params.get('token');
+  
+  // Get file data injected by FastAPI or from window.FILE_DATA
+  const fileData = window.FILE_DATA || {};
+  
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
-
-  const [downloadLink] = useState(linkParam || 'https://example.com/file-download');
-  const [fileName] = useState(nameParam || 'Design_Resources_2024.zip');
-  const [fileSize] = useState(sizeParam || '۱.۲ گیگابایت');
+  
+  // Build download link from token
+  const [downloadLink] = useState(tokenParam ? `/stream/${tokenParam}/${encodeURIComponent(fileData.file_name || 'file')}` : '');
+  const [fileName] = useState(fileData.file_name || 'فایل ناشناس');
+  const [fileSize] = useState(formatFileSize(fileData.file_size || 0));
+  const [fileType] = useState(fileData.file_type || 'unknown');
 
   const dashArray = 377;
 
@@ -40,16 +43,21 @@ function App() {
   const handleGenerate = () => {
     setIsGenerating(true);
 
-    // Mock download link generation
+    // Open the download link
     setTimeout(() => {
       setIsGenerating(false);
       setIsGenerated(true);
-      window.open(downloadLink, '_self');
+      if (downloadLink) {
+        window.open(downloadLink, '_self');
+      }
     }, 1200);
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(downloadLink);
+    if (downloadLink) {
+      const fullUrl = `${window.location.origin}${downloadLink}`;
+      navigator.clipboard.writeText(fullUrl);
+    }
   };
 
   const offset = dashArray - ((INITIAL_TIME - timeLeft) / INITIAL_TIME) * dashArray;
@@ -129,7 +137,7 @@ function App() {
               {timeLeft === 0 && !isGenerated && (
                 <div className="w-full max-w-md" id="action-container">
                   <button
-                    disabled={isGenerating}
+                    disabled={isGenerating || !downloadLink}
                     onClick={handleGenerate}
                     className="w-full bg-primary text-on-primary min-h-[56px] rounded-xl flex items-center justify-center gap-sm font-headline-md text-headline-md transition-all duration-300 hover:bg-primary-container hover:scale-[1.02] active:scale-95 shadow-lg animate-scale-in"
                   >
@@ -157,7 +165,7 @@ function App() {
                   </div>
                   <div className="bg-surface-container-lowest p-sm rounded border border-outline-variant flex items-center justify-between group">
                     <code className="text-primary font-body-md text-body-md overflow-hidden text-ellipsis whitespace-nowrap px-2" style={{ direction: 'ltr' }}>
-                      {downloadLink}
+                      {`${window.location.origin}${downloadLink}`}
                     </code>
                     <button onClick={copyToClipboard} className="text-primary hover:bg-primary/10 p-xs rounded transition-all duration-200 active:scale-90" title="کپی کردن لینک">
                       <span className="material-symbols-outlined">content_copy</span>
@@ -230,6 +238,19 @@ function App() {
       </footer>
     </div>
   );
+}
+
+// Helper function to format file size
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let unitIndex = 0;
+  let size = bytes;
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+  return `${size.toFixed(2)} ${units[unitIndex]}`;
 }
 
 export default App;
