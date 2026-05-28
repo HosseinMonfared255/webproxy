@@ -212,7 +212,7 @@ def create_flask_app(bot_app: Application) -> Flask:
     flask_app = Flask(__name__)
     
     # Get the directory where the script is located
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ad-page', 'dist')
     
     @flask_app.route("/download")
     def download_page():
