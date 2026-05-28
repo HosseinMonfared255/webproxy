@@ -16,10 +16,11 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
-from flask import Flask, Response, stream_with_context
+from flask import Flask, Response, stream_with_context, send_from_directory
 import asyncio
 import threading
 import httpx
+from urllib.parse import quote
 
 # Configure logging
 logging.basicConfig(
@@ -182,18 +183,24 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         # Generate streaming link
         stream_link = f"{SERVER_DOMAIN}/stream/{unique_id}/{file_info['file_name']}"
         
+        # Generate interstitial page link (with ads and timer)
+        encoded_link = quote(stream_link, safe='')
+        encoded_name = quote(file_info['file_name'], safe='')
+        file_size_str = get_file_size_str(file_info['file_size'])
+        interstitial_link = f"{SERVER_DOMAIN}/download?link={encoded_link}&name={encoded_name}&size={file_size_str}"
+        
         # Create message with link
         link_message = (
             f"✅ **لینک دانلود استریم آماده شد!**\n\n"
             f"📝 نام فایل: `{file_info['file_name']}`\n"
-            f"💾 حجم: {get_file_size_str(file_info['file_size'])}\n\n"
-            f"🔗 **لینک دانلود:**\n`{stream_link}`\n\n"
-            f"⚠️ نکته: این لینک فقط از طریق سرور ما قابل دسترسی است و فایل مستقیماً از تلگرام استریم می‌شود."
+            f"💾 حجم: {file_size_str}\n\n"
+            f"🔗 **لینک دانلود:**\n`{interstitial_link}`\n\n"
+            f"⚠️ نکته: برای دریافت فایل، روی لینک کلیک کنید و پس از مشاهده تبلیغات، دکمه دانلود را بزنید."
         )
         
         # Create inline keyboard with link button
         keyboard = [
-            [InlineKeyboardButton("📥 دانلود فایل", url=stream_link)],
+            [InlineKeyboardButton("📥 دریافت لینک دانلود", url=interstitial_link)],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
@@ -203,6 +210,14 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 def create_flask_app(bot_app: Application) -> Flask:
     """Create Flask app for serving streaming files."""
     flask_app = Flask(__name__)
+    
+    # Get the directory where the script is located
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    
+    @flask_app.route("/download")
+    def download_page():
+        """Serve the interstitial download page with ads and timer."""
+        return send_from_directory(BASE_DIR, 'interstitial_page.html')
     
     @flask_app.route("/stream/<unique_id>/<filename>")
     def stream_file(unique_id: str, filename: str):

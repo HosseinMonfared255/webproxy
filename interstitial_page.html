@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دریافت لینک دانلود</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .file-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .file-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .file-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .timer-container {
+            text-align: center;
+            padding: 30px 20px;
+            background: #fff3cd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .timer-text {
+            font-size: 18px;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .download-section {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px 40px;
+            font-size: 20px;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
+        }
+
+        .download-link-display {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            word-break: break-all;
+        }
+
+        .download-link-display p {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .download-link-display code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #495057;
+            display: block;
+        }
+
+        .ads-container {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .ads-title {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .ad-banner {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ad-banner:hover {
+            background: #e9ecef;
+            transform: scale(1.02);
+        }
+
+        .ad-banner img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .ad-banner h4 {
+            color: #333;
+            margin: 10px 0 5px;
+            font-size: 16px;
+        }
+
+        .ad-banner p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 1s linear;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 دریافت لینک دانلود شما</h1>
+            <p>لطفاً چند لحظه صبر کنید...</p>
+        </div>
+
+        <div class="content">
+            <div class="file-info">
+                <h3 id="fileName">نام فایل: در حال بارگذاری...</h3>
+                <p id="fileSize">حجم فایل: ...</p>
+            </div>
+
+            <div class="timer-container" id="timerContainer">
+                <div class="timer-text">⏳ زمان باقی‌مانده تا دریافت لینک:</div>
+                <div class="timer" id="timer">15</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="download-section" id="downloadSection">
+                <div class="success-icon">✅</div>
+                <button class="download-btn" onclick="triggerDownload()">
+                    📥 دریافت لینک دانلود
+                </button>
+                <div class="download-link-display">
+                    <p>لینک مستقیم دانلود:</p>
+                    <code id="directLink">...</code>
+                </div>
+            </div>
+
+            <div class="ads-container">
+                <div class="ads-title">📢 تبلیغات ویژه</div>
+                
+                <div class="ad-banner" onclick="openAd('https://example.com/ad1')">
+                    <h4>🌟 سرویس premium ما</h4>
+                    <p>دانلود بدون محدودیت و با سرعت بالا!</p>
+                </div>
+
+                <div class="ad-banner" onclick="openAd('https://example.com/ad2')">
+                    <h4>🚀 افزایش سرعت اینترنت</h4>
+                    <p>بهترین سرویس‌های افزایش سرعت</p>
+                </div>
+
+                <div class="ad-banner" onclick="openAd('https://example.com/ad3')">
+                    <h4>💎 خدمات ابری</h4>
+                    <p>فضای ذخیره‌سازی امن و نامحدود</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>با تشکر از شکیبایی شما ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const streamLink = urlParams.get('link') || '';
+        const fileName = urlParams.get('name') || 'فایل ناشناس';
+        const fileSize = urlParams.get('size') || 'نامشخص';
+
+        // Update file info
+        document.getElementById('fileName').textContent = 'نام فایل: ' + decodeURIComponent(fileName);
+        document.getElementById('fileSize').textContent = 'حجم فایل: ' + fileSize;
+        document.getElementById('directLink').textContent = streamLink;
+
+        // Timer logic
+        let timeLeft = 15;
+        const timerElement = document.getElementById('timer');
+        const timerContainer = document.getElementById('timerContainer');
+        const downloadSection = document.getElementById('downloadSection');
+        const progressFill = document.getElementById('progressFill');
+
+        function updateTimer() {
+            timerElement.textContent = timeLeft;
+            const progress = ((15 - timeLeft) / 15) * 100;
+            progressFill.style.width = progress + '%';
+
+            if (timeLeft <= 0) {
+                showDownload();
+                return;
+            }
+
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+
+        function showDownload() {
+            timerContainer.style.display = 'none';
+            downloadSection.style.display = 'block';
+        }
+
+        function triggerDownload() {
+            // Open the actual download link in a new tab
+            window.open(streamLink, '_blank');
+            
+            // Also change button text to indicate action
+            const btn = document.querySelector('.download-btn');
+            btn.innerHTML = '✅ دانلود شروع شد!';
+            btn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+        }
+
+        function openAd(url) {
+            window.open(url, '_blank');
+        }
+
+        // Start timer when page loads
+        window.onload = function() {
+            if (streamLink) {
+                updateTimer();
+            } else {
+                document.getElementById('timerContainer').innerHTML = '<p style="color: red;">لینک نامعتبر است!</p>';
+            }
+        };
+    </script>
+</body>
+</html>
