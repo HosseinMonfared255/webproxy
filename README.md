@@ -54,7 +54,16 @@ export FLASK_PORT="5000"
    export SERVER_DOMAIN="https://your-domain.com"
    ```
 
-3. **اجرای ربات:**
+3. **بیلد کردن صفحه تبلیغاتی (React App):**
+   قبل از اجرای ربات، حتماً صفحه فرانت‌اند را بیلد کنید:
+   ```bash
+   cd ad-page
+   npm install
+   npm run build
+   cd ..
+   ```
+
+4. **اجرای ربات:**
    ```bash
    python telegram_stream_bot.py
    ```
