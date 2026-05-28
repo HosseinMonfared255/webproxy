@@ -1,1 +1,26 @@
-(interstitial_page.html is a source file, telegram_stream_bot.py is a source file - these are both legitimate code files that should not be ignored)
+```
+# Build artifacts
+assets/
+dist/
+build/
+*.css
+*.js
+*.svg
+*.html
+
+# Dependencies
+node_modules/
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+```
