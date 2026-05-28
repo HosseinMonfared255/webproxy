@@ -217,7 +217,22 @@ def create_flask_app(bot_app: Application) -> Flask:
     @flask_app.route("/download")
     def download_page():
         """Serve the interstitial download page with ads and timer."""
-        return send_from_directory(BASE_DIR, 'interstitial_page.html')
+        return send_from_directory(BASE_DIR, 'index.html')
+
+    @flask_app.route("/assets/<path:filename>")
+    def serve_assets(filename):
+        """Serve static assets for the React app."""
+        return send_from_directory(os.path.join(BASE_DIR, 'assets'), filename)
+
+    @flask_app.route("/favicon.svg")
+    def serve_favicon():
+        """Serve favicon for the React app."""
+        return send_from_directory(BASE_DIR, 'favicon.svg')
+
+    @flask_app.route("/icons.svg")
+    def serve_icons():
+        """Serve icons for the React app."""
+        return send_from_directory(BASE_DIR, 'icons.svg')
     
     @flask_app.route("/stream/<unique_id>/<filename>")
     def stream_file(unique_id: str, filename: str):
